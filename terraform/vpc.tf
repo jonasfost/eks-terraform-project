@@ -3,8 +3,8 @@
 ################################################################################
 
 module "vpc" {
-  source  = "app.terraform.io/jonasfost/vpc/aws"
-  version = "1.0.1"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.0.0"
 
   name = var.vpc_name
 
