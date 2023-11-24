@@ -9,6 +9,6 @@ locals {
     Provisionner = var.provisioner
   }
 
-  # cluster_name = "${var.eks_name}-${random_string.suffix.result}"
+  cluster_name = "${var.eks_name}-${random_string.suffix.result}"
 
 }
