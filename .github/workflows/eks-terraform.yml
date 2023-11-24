@@ -107,10 +107,10 @@ jobs:
       # Sharing the test results to the Snyk platform
       with:
           args: --report
-    - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@v2
-      # with:
-      #   sarif_file: results.sarif
+    # - name: Upload result to GitHub Code Scanning
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: results.sarif
 
     # On push to "main", build or change infrastructure according to Terraform configuration files
     # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" 
@@ -122,7 +122,7 @@ jobs:
 
     - name: Terraform Destroy
       env:
-        destroy: false
+        destroy: true
       if: ${{ env.destroy == 'true' }} 
       run: terraform destroy -auto-approve -input=false  
 
