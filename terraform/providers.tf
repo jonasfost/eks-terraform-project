@@ -24,7 +24,7 @@ terraform {
     organization = "jonasfost"
 
     workspaces {
-      name = "knote-eks-infrastructure"
+      name = "knote-eks-prod"
     }
   }
 }

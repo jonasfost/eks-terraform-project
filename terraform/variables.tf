@@ -19,9 +19,9 @@ variable "vpc_name" {
 }
 
 ############## EKS Name Variable ###################
-variable "eks_name" {
+variable "name" {
   type    = string
-  default = "knote-eks"
+  default = "knote"
 }
 
 ############# CLuster VErsion Variable ################

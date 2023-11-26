@@ -1,71 +1,98 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+################################################################################
+# EKS Module
+################################################################################
 
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "19.15.3"
+  source = "/home/cyber/repos/johny-class-devops/terraform/modules/eks"
 
-  cluster_name = local.cluster_name
-  # cluster_name    = var.eks_name
-  cluster_version = var.cluster_version
-
-  vpc_id                         = module.vpc.vpc_id
-  subnet_ids                     = module.vpc.private_subnets
+  cluster_name                   = "${var.name}-eks"
+  cluster_version                = var.cluster_version
   cluster_endpoint_public_access = true
 
+  cluster_addons = {
+    coredns = {
+      preserve    = true
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+  }
+
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
+
+  # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type = var.ami_type
+    ami_type       = "AL2_x86_64"
+    instance_types = ["t2.micro"]
+
+    attach_cluster_primary_security_group = true
+    # vpc_security_group_ids                = [aws_security_group.additional.id]
+    # iam_role_additional_policies = {
+    #   additional = aws_iam_policy.additional.arn
+    # }
   }
 
   eks_managed_node_groups = {
-    one = {
-      name           = "node-group-1"
-      instance_types = [var.instance_type]
-      min_size       = 1
-      max_size       = 3
-      desired_size   = 2
-    }
+    blue = {}
+    green = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 1
 
-    two = {
-      name           = "node-group-2"
-      instance_types = [var.instance_type]
-      min_size       = 1
-      max_size       = 2
-      desired_size   = 1
+      instance_types = ["t2.micro"]
+      capacity_type  = "SPOT"
+      labels = {
+        Environment = var.environment
+      }
+
+      taints = {
+        dedicated = {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      }
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 100
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            delete_on_termination = true
+          }
+        }
+      }
+
+      update_config = {
+        max_unavailable_percentage = 33 # or set `max_unavailable`
+      }
+
     }
   }
 
-  cluster_tags = {
-    Name         = "${var.eks_name}-cluster"
+  # aws-auth configmap
+  manage_aws_auth_configmap = true
+
+  aws_auth_users = [
+    {
+      userarn  = data.aws_iam_user.user_name.arn
+      username = data.aws_iam_user.user_name.user_name
+      groups   = ["system:masters"]
+    }
+  ]
+
+  tags = {
+    Name         = "${var.name}-eks"
     Environment  = var.environment
     Provisionner = var.provisioner
-  }
-
-}
-
-module "irsa-ebs-csi" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "4.7.0"
-
-  create_role                   = true
-  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
-  provider_url                  = module.eks.oidc_provider
-  role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
-}
-
-resource "aws_eks_addon" "ebs-csi" {
-  cluster_name             = module.eks.cluster_name
-  addon_name               = var.addon_name
-  addon_version            = var.addon_version
-  service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
-  tags = {
-    "eks_addon" = "ebs-csi"
-    "terraform" = "true"
   }
 }
