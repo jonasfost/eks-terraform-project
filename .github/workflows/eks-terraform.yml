@@ -1,4 +1,4 @@
-name: Build and Deploy to Docker Hub
+name: EKS Terraform Provisionning
 
 on:
   push:

@@ -5,7 +5,7 @@
 module "eks" {
   # source = "/home/cyber/repos/johny-class-devops/terraform/modules/eks"
   source  = "app.terraform.io/jonasfost/eks/aws"
-  version = "1.0.3"
+  version = "1.1.0"
 
   cluster_name                   = "${var.name}-eks"
   cluster_version                = var.cluster_version
