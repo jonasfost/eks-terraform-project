@@ -1,4 +1,4 @@
-name: EKS Terraform Provisionning
+name: EKS Terraform Provisioning
 
 on:
   push:
