@@ -97,7 +97,7 @@ jobs:
     #     sarif_file: 'trivy-results.sarif'
 
     # Snyk scan Infrastructure as Code Terraform Config for Vulnerabilities
-    - name: Run Snyk to check configuration files for security issues
+    - name: Run Snyk scan to check configuration files for security issues
       # Snyk can be used to break the build when it detects security issues.
       # In this case we want to upload the issues to GitHub Code Scanning
       continue-on-error: true
@@ -107,7 +107,7 @@ jobs:
       # Sharing the test results to the Snyk platform
       with:
         args: --sarif-file-output=snyk.scan
-    - name: Upload result to GitHub Code Scanning
+    - name: Upload Snyk Scan Result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: snyk.scan
