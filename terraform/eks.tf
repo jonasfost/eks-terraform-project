@@ -3,7 +3,9 @@
 ################################################################################
 
 module "eks" {
-  source = "/home/cyber/repos/johny-class-devops/terraform/modules/eks"
+  # source = "/home/cyber/repos/johny-class-devops/terraform/modules/eks"
+  source  = "app.terraform.io/jonasfost/eks/aws"
+  version = "1.0.3"
 
   cluster_name                   = "${var.name}-eks"
   cluster_version                = var.cluster_version
