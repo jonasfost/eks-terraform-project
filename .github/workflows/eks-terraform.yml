@@ -11,7 +11,7 @@ permissions:
   security-events: write
 
 jobs:
-  EKS-cluster-terraform-provisioning :
+  EKS-cluster-terraform-provisioning:
     # if: ${{ always() }}
     name: 'EKS Cluster Terraform Provisioning'
     runs-on: ubuntu-latest
