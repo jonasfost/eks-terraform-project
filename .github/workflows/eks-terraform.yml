@@ -122,7 +122,7 @@ jobs:
 
     - name: Terraform Destroy
       env:
-        destroy: true
+        destroy: false
       if: ${{ env.destroy == 'true' }} 
       run: terraform destroy -auto-approve -input=false  
 
