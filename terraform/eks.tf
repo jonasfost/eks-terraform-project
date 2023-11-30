@@ -41,11 +41,46 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    blue = {}
-    green = {
+    prod-knote-node1 = {
       min_size     = 1
       max_size     = 10
-      desired_size = 1
+      desired_size = 2
+
+      instance_types = ["t2.micro"]
+      capacity_type  = "SPOT"
+      labels = {
+        Environment = var.environment
+      }
+
+      taints = {
+        dedicated = {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      }
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 100
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            delete_on_termination = true
+          }
+        }
+      }
+
+      update_config = {
+        max_unavailable_percentage = 33 # or set `max_unavailable`
+      }
+    }
+    prod-knote-node2 = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 2
 
       instance_types = ["t2.micro"]
       capacity_type  = "SPOT"
