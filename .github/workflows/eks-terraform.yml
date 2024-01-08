@@ -113,6 +113,7 @@ jobs:
       # Sharing the test results to the Snyk platform
       with:
         args: --sarif-file-output=snyk.scan
+
     - name: Upload Snyk Scan Result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
       with:
@@ -128,7 +129,7 @@ jobs:
 
     - name: Terraform Destroy
       env:
-        destroy: false
+        destroy: true
       if: ${{ env.destroy == 'true' }} 
       run: terraform destroy -auto-approve -input=false  
 
