@@ -44,23 +44,23 @@ module "eks" {
     prod-knote-node1 = {
       min_size     = 1
       max_size     = 10
-      desired_size = 2
+      desired_size = 1
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
       labels = {
-        Environment = var.environment
+        Environment = "${var.environment}-node1"
       }
     }
     prod-knote-node2 = {
       min_size     = 1
       max_size     = 10
-      desired_size = 2
+      desired_size = 1
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
       labels = {
-        Environment = var.environment
+        Environment = "${var.environment}-node2"
       }
 
       taints = {
