@@ -32,10 +32,10 @@ module "vpc" {
 
   #### Public Subnets Tags
   public_subnet_tags = {
-    Name                     = "${var.name}-public-subnet"
-    Environment              = var.environment
-    Provisionner             = var.provisioner
-    "kubernetes.io/role/elb" = 1
+    Name                              = "${var.name}-public-subnet"
+    Environment                       = var.environment
+    Provisionner                      = var.provisioner
+    "kubernetes.io/role/elb"          = 1
     "kubernetes.io/cluster/knote-eks" = "owned"
   }
 
