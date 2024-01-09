@@ -32,9 +32,9 @@ module "vpc" {
 
   #### Public Subnets Tags
   public_subnet_tags = {
-    Name         = "${var.name}-public-subnet"
-    Environment  = var.environment
-    Provisionner = var.provisioner
+    Name                     = "${var.name}-public-subnet"
+    Environment              = var.environment
+    Provisionner             = var.provisioner
     "kubernetes.io/role/elb" = "1"
   }
 
@@ -47,9 +47,9 @@ module "vpc" {
 
   ### Private Subnets Tags
   private_subnet_tags = {
-    Name         = "${var.name}-private-subnet"
-    Environment  = var.environment
-    Provisionner = var.provisioner
+    Name                              = "${var.name}-private-subnet"
+    Environment                       = var.environment
+    Provisionner                      = var.provisioner
     "kubernetes.io/role/internal-elb" = "1"
   }
 
