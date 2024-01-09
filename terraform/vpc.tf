@@ -32,11 +32,11 @@ module "vpc" {
 
   #### Public Subnets Tags
   public_subnet_tags = {
-    Name                              = "${var.name}-public-subnet"
-    Environment                       = var.environment
-    Provisionner                      = var.provisioner
-    "kubernetes.io/role/elb"          = 1
-    "kubernetes.io/cluster/knote-eks" = "owned"
+    Name                                    = "${var.name}-public-subnet"
+    Environment                             = var.environment
+    Provisionner                            = var.provisioner
+    "kubernetes.io/role/elb"                = 1
+    "kubernetes.io/cluster/${var.name}-eks" = "owned"
   }
 
   ### Public Route Table Tags
@@ -48,11 +48,11 @@ module "vpc" {
 
   ### Private Subnets Tags
   private_subnet_tags = {
-    Name                              = "${var.name}-private-subnet"
-    Environment                       = var.environment
-    Provisionner                      = var.provisioner
-    "kubernetes.io/role/internal-elb" = 1
-    "kubernetes.io/cluster/knote-eks" = "owned"
+    Name                                    = "${var.name}-private-subnet"
+    Environment                             = var.environment
+    Provisionner                            = var.provisioner
+    "kubernetes.io/role/internal-elb"       = 1
+    "kubernetes.io/cluster/${var.name}-eks" = "owned"
   }
 
   ### Private Route Table Tags
