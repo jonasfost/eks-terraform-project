@@ -3,9 +3,8 @@
 ################################################################################
 
 module "eks" {
-  # source = "/home/cyber/repos/johny-class-devops/terraform/modules/eks"
   source  = "app.terraform.io/jonasfost/eks/aws"
-  version = "1.1.0"
+  version = "1.1.1"
 
   cluster_name                   = "${var.name}-eks"
   cluster_version                = var.cluster_version
@@ -22,6 +21,9 @@ module "eks" {
     vpc-cni = {
       most_recent = true
     }
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -31,7 +33,7 @@ module "eks" {
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["t3.large"]
+    instance_types = [var.instance_type]
 
     attach_cluster_primary_security_group = true
     # vpc_security_group_ids                = [aws_security_group.additional.id]
@@ -46,7 +48,7 @@ module "eks" {
       max_size     = 10
       desired_size = 1
 
-      instance_types = ["t3.large"]
+      instance_types = [var.instance_type]
       capacity_type  = "SPOT"
       labels = {
         Environment = "${var.environment}-node1"
@@ -57,7 +59,7 @@ module "eks" {
       max_size     = 10
       desired_size = 1
 
-      instance_types = ["t3.large"]
+      instance_types = [var.instance_type]
       capacity_type  = "SPOT"
       labels = {
         Environment = "${var.environment}-node2"
@@ -91,6 +93,11 @@ module "eks" {
     }
   }
 
+  write_kubeconfig   = true
+  config_output_path = "./"
+
+  workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+
   # aws-auth configmap
   manage_aws_auth_configmap = true
 
@@ -102,9 +109,39 @@ module "eks" {
     }
   ]
 
-  tags = {
+  cluster_tags = {
     Name         = "${var.name}-eks"
     Environment  = var.environment
     Provisionner = var.provisioner
+  }
+}
+
+resource "aws_iam_policy" "worker_policy" {
+  name        = "worker-policy-${var.name}-eks"
+  description = "Worker policy for the ALB Ingress"
+
+  policy = file("iam_policy.json")
+}
+
+resource "helm_release" "ingress" {
+  name       = "ingress"
+  namespace  = "kube-system"
+  chart      = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  version    = "1.1.6"
+
+  set {
+    name  = "autoDiscoverAwsRegion"
+    value = "true"
+  }
+
+  set {
+    name  = "autoDiscoverAwsVpcID"
+    value = "true"
+  }
+
+  set {
+    name  = "clusterName"
+    value = "${var.name}-eks"
   }
 }

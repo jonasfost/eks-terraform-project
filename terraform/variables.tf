@@ -28,7 +28,7 @@ variable "name" {
 
 variable "cluster_version" {
   type    = string
-  default = "1.27"
+  default = "1.28"
 }
 ########## REgion Variable ###########################
 variable "region" {
@@ -40,7 +40,7 @@ variable "region" {
 
 variable "instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t3.large"
 }
 
 ################## AMI Type variable ####################
