@@ -93,7 +93,7 @@ module "eks" {
     }
   }
 
-  workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+  iam_role_additional_policies = [aws_iam_policy.worker_policy.arn]
 
   # aws-auth configmap
   manage_aws_auth_configmap = true
