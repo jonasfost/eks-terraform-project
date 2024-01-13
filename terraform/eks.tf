@@ -123,9 +123,9 @@ resource "aws_iam_policy" "worker_policy" {
 }
 
 resource "helm_release" "ingress" {
-  name       = "ingress"
-  namespace  = "kube-system"
-  chart      = "aws-load-balancer-controller"
+  name      = "ingress"
+  namespace = "kube-system"
+  chart     = "aws-load-balancer-controller"
   # repository = "https://aws.github.io/eks-charts"
   repository = "https://github.com/aws/eks-charts"
   version    = "1.1.6"
