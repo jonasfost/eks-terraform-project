@@ -93,6 +93,17 @@ module "eks" {
     }
   }
 
+  node_security_group_additional_rules = {
+    ingress_allow_access_from_control_plane = {
+      type                          = "ingress"
+      protocol                      = "tcp"
+      from_port                     = 9443
+      to_port                       = 9443
+      source_cluster_security_group = true
+      description                   = "Allow access from control plane to webhook port of AWS load balancer controller"
+    }
+  }
+
   iam_role_additional_policies = {
     additional = aws_iam_policy.worker_policy.arn
   }
@@ -122,27 +133,36 @@ resource "aws_iam_policy" "worker_policy" {
   policy = file("iam_policy.json")
 }
 
-resource "helm_release" "ingress" {
-  name      = "ingress"
-  namespace = "kube-system"
-  chart     = "aws-load-balancer-controller"
-  # repository = "https://aws.github.io/eks-charts"
-  repository = "https://github.com/aws/eks-charts"
-  version    = "1.1.6"
 
-  set {
-    name  = "autoDiscoverAwsRegion"
-    value = "true"
-  }
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = module.eks.eks_managed_node_groups
 
-  set {
-    name  = "autoDiscoverAwsVpcID"
-    value = "true"
-  }
-
-  set {
-    name = "clusterName"
-    # value = "${var.name}-eks"
-    value = data.aws_eks_cluster.cluster.name
-  }
+  policy_arn = aws_iam_policy.worker_policy.arn
+  role       = each.value.iam_role_name
 }
+
+# resource "helm_release" "ingress" {
+#   name      = "ingress"
+#   namespace = "kube-system"
+#   chart     = "aws-load-balancer-controller"
+#   # repository = "https://aws.github.io/eks-charts"
+#   repository = "https://github.com/aws/eks-charts"
+#   version    = "1.1.6"
+
+#   set {
+#     name  = "autoDiscoverAwsRegion"
+#     value = "true"
+#   }
+
+#   set {
+#     name  = "autoDiscoverAwsVpcID"
+#     value = "true"
+#   }
+
+#   set {
+#     name = "clusterName"
+#     # value = "${var.name}-eks"
+#     # value = data.aws_eks_cluster.cluster.name
+#     value = module.eks.cluster_name
+#   }
+# }
