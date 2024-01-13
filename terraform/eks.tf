@@ -142,6 +142,7 @@ resource "helm_release" "ingress" {
 
   set {
     name  = "clusterName"
-    value = "${var.name}-eks"
+    # value = "${var.name}-eks"
+    value = data.aws_eks_cluster.cluster.name
   }
 }
