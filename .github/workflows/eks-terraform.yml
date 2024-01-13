@@ -30,7 +30,13 @@ jobs:
 
     # Install AWS-CLI 
     - name: Install AWS CLI
-      uses: chrislennon/action-aws-cli@v1.1
+      uses: nocnoc-thailand/install-aws-cli-action@v1.0.1
+      with:
+        version: 2     # default
+        verbose: false # default
+        arch: amd64    # allowed values: amd64, arm64
+        rootdir: ""    # defaults to "PWD"
+        workdir: ""    # defaults to "PWD/unfor19-awscli"
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
