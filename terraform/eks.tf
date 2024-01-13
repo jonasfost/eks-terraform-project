@@ -122,25 +122,26 @@ resource "aws_iam_policy" "worker_policy" {
   policy = file("iam_policy.json")
 }
 
-# resource "helm_release" "ingress" {
-#   name       = "ingress"
-#   namespace  = "kube-system"
-#   chart      = "aws-load-balancer-controller"
-#   # repository = "https://aws.github.io/eks-charts"
-#   version    = "1.1.6"
+resource "helm_release" "ingress" {
+  name       = "ingress"
+  namespace  = "kube-system"
+  chart      = "aws-load-balancer-controller"
+  # repository = "https://aws.github.io/eks-charts"
+  repository = "https://github.com/aws/eks-charts"
+  version    = "1.1.6"
 
-#   set {
-#     name  = "autoDiscoverAwsRegion"
-#     value = "true"
-#   }
+  set {
+    name  = "autoDiscoverAwsRegion"
+    value = "true"
+  }
 
-#   set {
-#     name  = "autoDiscoverAwsVpcID"
-#     value = "true"
-#   }
+  set {
+    name  = "autoDiscoverAwsVpcID"
+    value = "true"
+  }
 
-#   set {
-#     name  = "clusterName"
-#     value = "${var.name}-eks"
-#   }
-# }
+  set {
+    name  = "clusterName"
+    value = "${var.name}-eks"
+  }
+}
